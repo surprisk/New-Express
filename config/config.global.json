@@ -1,0 +1,9 @@
+{
+    "API":{
+        "VERSION": "V1",
+        "URL": "/API/V1"
+    },
+    "ROUTES":{
+        "LOAD": ["exemple", "notFound"]
+    }
+}

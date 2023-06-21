@@ -1,25 +1,48 @@
-//  EXPRESS
+// MODULE
 const express = require("express");
+const path = require('path');
+const fs = require('fs');
+
+// MIDDLEWARE
 const app = express();
-
-// parse requests of content-type - application/json
 app.use(express.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(__dirname + '/public'));
 
-app.get("/", (req, res, next) => {
-  res.json('Welcome to your new API')
-})
+// GLOBAL VAR
+global.config = {
+  global: require('./config/config.global.json')
+}
 
-app.get("*", (req, res, next) => {
-  res.redirect("/");
-})
+// 
+const routesPath = path.join(__dirname, 'routes');
+fs.readdir(routesPath, (err, routesFiles) => {
+
+  try {
+
+    err ?? new Error(`Unable to scan directory: ${err}`);
+
+    const routesNotLoaded = [];
+
+    const routesLoaded = config.global.ROUTES.LOAD.filter((routeName) => {
+      const routeFullName = `route.${routeName}.js`;
+
+      return routesFiles.includes(routeFullName) 
+      ? (require(`${routesPath}/${routeFullName}`)(app), true)
+      : (routesNotLoaded.push(routeName), false)
+    })
+
+    console.log('\x1b[32m', `✅ Routes successfully loaded: ${routesLoaded}`);
+    routesNotLoaded.length && console.warn('\x1b[33m', `🚨 Routes not loaded: ${routesNotLoaded}`)
+
+  } catch (err) {
+    console.error(err);
+  }
+
+});
 
 // -- API server definition
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log('\x1b[35m', `\n🚀 Server is running on port ${PORT}.\n`);
 });
