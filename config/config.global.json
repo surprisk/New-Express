@@ -5,5 +5,9 @@
     },
     "ROUTES":{
         "LOAD": ["exemple", "notFound"]
+    },
+    "CORS": {
+        "origin": "http://example.com",
+        "optionsSuccessStatus": 200
     }
 }

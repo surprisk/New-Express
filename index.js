@@ -2,17 +2,19 @@
 const express = require("express");
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors')
+
+// GLOBAL VAR
+global.config = {
+  global: require('./config/config.global.json')
+}
 
 // MIDDLEWARE
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-
-// GLOBAL VAR
-global.config = {
-  global: require('./config/config.global.json')
-}
+app.use(cors(config.global.CORS));
 
 // 
 const routesPath = path.join(__dirname, 'routes');
@@ -32,8 +34,8 @@ fs.readdir(routesPath, (err, routesFiles) => {
       : (routesNotLoaded.push(routeName), false)
     })
 
-    console.log('\x1b[32m', `✅ Routes successfully loaded: ${routesLoaded}`);
-    routesNotLoaded.length && console.warn('\x1b[33m', `🚨 Routes not loaded: ${routesNotLoaded}`)
+    console.log('\x1b[32m', `\n✅ Routes successfully loaded: ${routesLoaded}`, '\x1b[0m');
+    routesNotLoaded.length && console.warn('\x1b[33m', `\n🚨 Routes not loaded: ${routesNotLoaded}`, '\x1b[0m')
 
   } catch (err) {
     console.error(err);
@@ -44,5 +46,5 @@ fs.readdir(routesPath, (err, routesFiles) => {
 // -- API server definition
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log('\x1b[35m', `\n🚀 Server is running on port ${PORT}.\n`);
+  console.log('\x1b[35m', `\n🚀 Server is running on port ${PORT}.`, '\x1b[0m');
 });
